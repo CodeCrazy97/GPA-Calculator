@@ -56,7 +56,8 @@ public class GradeCalculator2 {
     public static JTextField weightField = new JTextField();
     public static JTextField gradeField = new JTextField();
     public static JTextField descriptionField = new JTextField();
-    public static JTextField classField = new JTextField();
+    public static JTextField classField = new JTextField();  //Instead, use a combo box.
+    public static JComboBox<String> classNamesComboBox = new JComboBox<>();
     public static JTextArea gradesArea = new JTextArea();
     public static JTextField necessaryField = new JTextField();
     public static JTextField projectedField = new JTextField();
@@ -123,13 +124,13 @@ public class GradeCalculator2 {
 // Weight label.
             JLabel weight = new JLabel("Weight (%): ");
             weight.setVisible(true);
-            weight.setBounds(30, 50, 100, 20);
+            weight.setBounds(30, 80, 100, 20);
             guiFrame.add(weight);
 
 // Grade label.
             JLabel grade = new JLabel("Grade (%): ");
             grade.setVisible(true);
-            grade.setBounds(30, 80, 100, 20);
+            grade.setBounds(30, 50, 100, 20 );
             guiFrame.add(grade);
 
 // Class name label.
@@ -146,22 +147,33 @@ public class GradeCalculator2 {
 //////////////////////////////////////            
 // Text fields for the above JLabels.
             weightField.setVisible(true);
-            weightField.setBounds(140, 50, 100, 20);
-            guiFrame.add(weightField);
-            weightField.requestFocusInWindow();  // Place the cursor in this text field on startup.
+            weightField.setBounds(140, 80, 100, 20);
+            guiFrame.add(weightField);            
 
             gradeField.setVisible(true);
-            gradeField.setBounds(140, 80, 100, 20);
+            gradeField.setBounds(140, 50, 100, 20);
             guiFrame.add(gradeField);
+            gradeField.requestFocusInWindow();  // Place the cursor in this text field on startup.
 
             descriptionField.setVisible(true);
             descriptionField.setBounds(140, 110, 100, 20);
             guiFrame.add(descriptionField);
-
+/*
             classField.setVisible(true);
             classField.setBounds(140, 140, 100, 20);
             guiFrame.add(classField);
+*/
+            classNamesComboBox.setVisible(true);
+            classNamesComboBox.setBounds(140, 140, 100, 20);
+            guiFrame.add(classNamesComboBox);
 
+            //Place the names of the classes in the combo box.
+            for (int i = 0; i < classes.size(); i++) {
+                classNamesComboBox.addItem(classes.get(i));
+            }
+            
+            
+            
 //////////////////////////////////////
 // Button for putting the grade, its weight, a description, and the class in the database.
             JButton addToDB = new JButton("ADD");
@@ -192,12 +204,6 @@ public class GradeCalculator2 {
                         currentSemester = "SPRING " + Calendar.getInstance().get(Calendar.YEAR);
                     } else {
                         currentSemester = "FALL " + Calendar.getInstance().get(Calendar.YEAR);;
-                    }
-
-                    // Add the class to the combo box, if it doesn't already exist there.
-                    if (!classes.contains(classField.getText().toUpperCase())) {
-                        classes.add(classField.getText().toUpperCase());
-                        classesCB.addItem(classField.getText().toUpperCase());
                     }
 
                     addGrade(Double.parseDouble(gradeField.getText()), Double.parseDouble(weightField.getText()), descriptionField.getText(), classField.getText(), currentSemester);
@@ -532,7 +538,7 @@ public class GradeCalculator2 {
             System.out.println("NEW GRADE: " + grade);
 
             sql = "INSERT INTO GRADES (grade, weight, description, class, semester) values ("
-                    + grade / 100 + ", " + weight + ", '" + description + "', '" + className.toUpperCase() + "', '" + semester + "');";
+                    + grade / 100 + ", " + weight + ", '" + description + "', '" + classNamesComboBox.getItemAt(classNamesComboBox.getSelectedIndex()).toUpperCase() + "', '" + semester + "');";
 
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.executeUpdate();
@@ -542,7 +548,7 @@ public class GradeCalculator2 {
             weightField.setText("");
             descriptionField.setText("");
             //classField.setText("");  
-            weightField.requestFocusInWindow();  // Set the cursor to blinking in this field.
+            gradeField.requestFocusInWindow();  // Set the cursor to blinking in this field.
 
             System.out.println("execute successful");
             connection.close();
